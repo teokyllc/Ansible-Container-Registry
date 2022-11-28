@@ -1,0 +1,28 @@
+---
+- name: Container Registry on Ubuntu
+  hosts: container-registry
+  gather_facts: True
+  become: True
+  vars:
+    vault_addr: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR') }}"
+    vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN') }}"
+    
+
+  roles:
+    - role: common
+      vars:
+        hostname: cr.teokyllc.internal
+
+    - role: docker
+
+    - role: registry
+      vars:
+        is_mirror: false
+        mirror_url: https://registry-1.docker.io
+
+  tasks:
+    - name: Reboot the kubernetes node
+      reboot:
+        reboot_timeout: 120
+        connect_timeout: 30
+        test_command: uptime
