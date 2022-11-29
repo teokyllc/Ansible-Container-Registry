@@ -29,10 +29,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Test Ansible
-        run: |
-          ansible-playbook -K -i inventory main.yml
-
       - name: Run Ansible
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
