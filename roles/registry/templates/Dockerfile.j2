@@ -1,0 +1,12 @@
+FROM registry:latest
+
+RUN apk add --no-cache apache2-utils
+
+RUN mkdir /auth
+
+RUN htpasswd -bnB {{ cr_admin_user }} "{{ cr_passwd }}" > /auth/htpasswd
+
+RUN mkdir /certs
+
+COPY cr.teokyllc.internal.crt /certs/cr.teokyllc.internal.crt
+COPY cr.teokyllc.internal.key /certs/cr.teokyllc.internal.key

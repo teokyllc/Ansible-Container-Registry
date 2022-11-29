@@ -1,25 +1,47 @@
 ---
-- name: Create /docker-private-registry if it does not exist
+- name: Create /docker-private-registry directory
   ansible.builtin.file:
     path: /docker-private-registry
     state: directory
     mode: '0755'
 
-- name: Copy Docker compose file
+- name: Create TLS certificate and key from Vault
+  ansible.builtin.shell: |
+    export VAULT_ADDR={{ vault_addr }}
+    export VAULT_TOKEN={{ vault_token }}
+    vault write -format=json -tls-skip-verify pki/issue/intermediate-teokyllc-internal common_name={{ tls_common_name }} ttl={{ tls_ttl }} > /docker-private-registry/request.json
+    cat /docker-private-registry/request.json | jq -r '.data.certificate' > /docker-private-registry/cr.teokyllc.internal.crt
+    cat /docker-private-registry/request.json | jq -r '.data.private_key' > /docker-private-registry/cr.teokyllc.internal.key
+
+- name: Get admin password from Vault
+  ansible.builtin.shell: |
+    export VAULT_ADDR={{ vault_addr }}
+    export VAULT_TOKEN={{ vault_token }}
+    vault kv get -tls-skip-verify -mount=kv -field=admin-passwd container-registry
+  register: passwd
+
+- name: Setting password fact
+  ansible.builtin.set_fact: cr_passwd="{{ passwd.stdout }}"
+
+- name: Copy docker-compose.yml file
   template:
     src: docker-compose.yml.j2
     dest: /docker-private-registry/docker-compose.yml
+    mode: 0664
+
+- name: Copy Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: /docker-private-registry/Dockerfile
     mode: 0664
 
 - name: Tear down existing services
   community.docker.docker_compose:
     project_src: /docker-private-registry
     state: absent
+    remove_images: all
 
 - name: Create and start registry service
   community.docker.docker_compose:
     project_src: /docker-private-registry
   register: output
-
-- ansible.builtin.debug:
-    var: output

@@ -29,6 +29,7 @@
     - apt-transport-https
     - ca-certificates
     - curl
+    - jq
     - lsb-release
     - python3-pip
     - vault
@@ -42,3 +43,15 @@
   ansible.builtin.pip:
     name: pyyaml
     executable: pip3
+
+- name: Add CA cert to trust store
+  ansible.builtin.shell: |
+    export VAULT_ADDR={{ vault_addr }}
+    export VAULT_TOKEN={{ vault_token }}
+    vault kv get -mount=kv -field=ca-chain cert > /usr/local/share/ca-certificates/root-ca-bundle.crt
+    update-ca-certificates
+
+- name: Add Vault SSH client signer public key
+  ansible.builtin.shell: |
+    curl -o /etc/ssh/trusted-user-ca-keys.pem {{ vault_addr }}/v1/ssh-client-signer/public_key
+    echo "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" >> /etc/ssh/sshd_config

@@ -1,16 +1,19 @@
 version: '3.5'
 services:
   api:
-    image: registry:latest
+    build: /docker-private-registry
     ports:
-    - "5000:5000"
+    - "443:443"
     volumes:
     - registry:/var/lib/registry
     restart: always
-{% if is_mirror %}
     environment:
-      REGISTRY_PROXY_REMOTEURL: {{ mirror_url }}
-{% endif %}
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: basic-realm
+      REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+      REGISTRY_HTTP_ADDR: "0.0.0.0:443"
+      REGISTRY_HTTP_TLS_CERTIFICATE: "/certs/cr.teokyllc.internal.crt"
+      REGISTRY_HTTP_TLS_KEY: "/certs/cr.teokyllc.internal.key"
 
 volumes:
   registry:

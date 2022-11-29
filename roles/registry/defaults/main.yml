@@ -1,2 +1,5 @@
-is_mirror: true
+is_mirror: false
 mirror_url: https://registry-1.docker.io
+tls_ttl: 8035h
+tls_common_name: cr.teokyllc.internal
+cr_admin_user: admin

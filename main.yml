@@ -6,7 +6,6 @@
   vars:
     vault_addr: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR') }}"
     vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN') }}"
-    
 
   roles:
     - role: common
@@ -19,9 +18,12 @@
       vars:
         is_mirror: false
         mirror_url: https://registry-1.docker.io
+        tls_ttl: 8035h
+        tls_common_name: cr.teokyllc.internal
+        cr_admin_user: ataylor
 
   tasks:
-    - name: Reboot the kubernetes node
+    - name: Reboot the container registry
       reboot:
         reboot_timeout: 120
         connect_timeout: 30
