@@ -35,6 +35,6 @@ jobs:
           rm -rf ~/.ssh || echo "~/.ssh doesn't exist"
           ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -P "" -C allan
           vault write -field=signed_key ssh-client-signer/sign/signer-role public_key=@$HOME/.ssh/id_rsa.pub > ~/.ssh/id_rsa-cert.pub
-          chmod 600 signed-cert.pub
+          chmod 600 ~/.ssh/id_rsa-cert.pub
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook -i inventory --private-key ~/.ssh/id_rsa --user allan main.yml
