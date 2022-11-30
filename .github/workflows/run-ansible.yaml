@@ -1,21 +1,5 @@
 name: Run Ansible
 
-on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-    branches:
-      - 'main'
-    paths:
-      - '*/**'
-  push:
-    branches:
-      - 'main'
-    paths:
-      - '*/**'
-
 env:
   VAULT_ADDR: "https://vault.teokyllc.internal:8200"
   VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
