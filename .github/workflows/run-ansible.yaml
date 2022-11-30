@@ -32,6 +32,6 @@ jobs:
       - name: Run Ansible
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          ssh-keygen
+          ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -P ""
           vault write ssh-client-signer/sign/signer-role public_key=@$HOME/.ssh/id_rsa.pub
           ansible-playbook -i inventory --private-key signed-cert.pub --private-key ~/.ssh/id_rsa --user allan main.yml
