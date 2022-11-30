@@ -1,5 +1,7 @@
 name: Run Ansible
 
+on: push
+
 env:
   VAULT_ADDR: "https://vault.teokyllc.internal:8200"
   VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
