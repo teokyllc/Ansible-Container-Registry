@@ -24,7 +24,4 @@
 
   tasks:
     - name: Reboot the container registry
-      reboot:
-        reboot_timeout: 120
-        connect_timeout: 30
-        test_command: uptime
+      ansible.builtin.reboot:
