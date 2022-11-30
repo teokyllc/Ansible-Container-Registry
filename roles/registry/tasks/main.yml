@@ -45,3 +45,4 @@
   community.docker.docker_compose:
     project_src: /docker-private-registry
   register: output
+
